@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { User } from 'src/auth/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import { CreateTaskDto } from './dto/create-task-dto';
 import { TaskFilterDto } from './dto/task-filter-dto';
@@ -11,17 +12,18 @@ export class TaskRepository extends Repository<Task> {
     super(Task, dataSource.createEntityManager());
   }
 
-  async findFilter(filter: TaskFilterDto): Promise<Task[]> {
+  async findFilter(filter: TaskFilterDto, user: User): Promise<Task[]> {
     const { status, search } = filter;
     const query = this.createQueryBuilder('task');
 
+    query.where({ user });
     if (status) {
       query.andWhere('task.status = :status', { status: status });
     }
 
     if (search) {
       query.andWhere(
-        'LOWER(task.title) like LOWER(:search) OR LOWER(task.description) like LOWER(:search)',
+        '(LOWER(task.title) like LOWER(:search) OR LOWER(task.description) like LOWER(:search))',
         { search: `%${search}%` },
       );
     }
@@ -29,13 +31,14 @@ export class TaskRepository extends Repository<Task> {
     return await query.getMany();
   }
 
-  async createTask(createTask: CreateTaskDto): Promise<Task> {
+  async createTask(createTask: CreateTaskDto, user: User): Promise<Task> {
     const { title, description } = createTask;
 
     const task: Task = this.create({
       title,
       description,
       status: TaskStatus.PENDING,
+      user,
     });
 
     return this.save(task);

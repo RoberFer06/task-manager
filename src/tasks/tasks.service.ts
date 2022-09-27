@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { User } from 'src/auth/user.entity';
 import { CreateTaskDto } from './dto/create-task-dto';
 import { TaskFilterDto } from './dto/task-filter-dto';
 import { UpdateTaskStatusDto } from './dto/update-task-status-dto';
@@ -9,16 +10,16 @@ import { TaskRepository } from './task.repository';
 export class TasksService {
   constructor(private taskRepository: TaskRepository) {}
 
-  async findAll(filter: TaskFilterDto): Promise<Task[]> {
-    return await this.taskRepository.findFilter(filter);
+  async findAll(filter: TaskFilterDto, user: User): Promise<Task[]> {
+    return await this.taskRepository.findFilter(filter, user);
   }
 
-  createTask(createTask: CreateTaskDto): Promise<Task> {
-    return this.taskRepository.createTask(createTask);
+  createTask(createTask: CreateTaskDto, user: User): Promise<Task> {
+    return this.taskRepository.createTask(createTask, user);
   }
 
-  async findOne(id: string): Promise<Task> {
-    const taskFound = await this.taskRepository.findOneBy({ id });
+  async findOne(id: string, user: User): Promise<Task> {
+    const taskFound = await this.taskRepository.findOneBy({ id, user });
     if (!taskFound) {
       throw new NotFoundException();
     }
@@ -34,9 +35,10 @@ export class TasksService {
 
   async updateTaskStatus(
     id: string,
+    user: User,
     taskRequest: UpdateTaskStatusDto,
   ): Promise<Task> {
-    const currentTask = await this.findOne(id);
+    const currentTask = await this.findOne(id, user);
     currentTask.status = taskRequest.status;
     return await this.taskRepository.save(currentTask);
   }
