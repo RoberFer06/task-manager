@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -45,7 +46,7 @@ export class TasksController {
     return this.taskService.findOne(id, user);
   }
 
-  @Post('/:id/status')
+  @Patch('/:id/status')
   updateStatus(
     @Param('id') id: string,
     @Body() updateStatus: UpdateTaskStatusDto,
@@ -55,7 +56,7 @@ export class TasksController {
   }
 
   @Delete('/:id')
-  removeTask(@Param('id') id: string) {
-    return this.taskService.deleteTask(id);
+  removeTask(@Param('id') id: string, @GetUser() user: User) {
+    return this.taskService.deleteTask(id, user);
   }
 }
