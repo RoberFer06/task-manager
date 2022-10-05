@@ -16,7 +16,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
-        console.log(configService.get('STAGE'));
         return {
           type: 'postgres',
           host: configService.get('DB_HOST'),
