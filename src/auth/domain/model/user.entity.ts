@@ -1,5 +1,5 @@
 import { Task } from '../../../tasks/domain/model/task.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -7,12 +7,13 @@ export class User {
   id: string;
 
   @Column({ unique: true })
-  username: string;
+  email: string;
 
   @Column()
   password: string;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  @OneToMany((_type) => Task, (task) => task.user, { eager: true })
+  @Column({ nullable: true })
+  refreshToken: string;
+
   task: Task[];
 }

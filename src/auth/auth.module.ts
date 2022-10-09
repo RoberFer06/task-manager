@@ -1,13 +1,16 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './service/auth.service';
+import { AuthService } from './service/auth/auth.service';
 import { AuthController } from './controller/auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
 import { User } from './domain/model/user.entity';
 import { UserRepository } from './domain/repository/user.repository';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './config/jwt/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { GoogleStrategy } from './config/strategies/google.strategy';
+import { TokenGeneratorService } from './service/token-generator/token-generator.service';
+import { JwtStrategy } from './config/strategies/jwt.strategy';
+import { RefreshTokenStrategy } from './config/strategies/refresh-token.strategy';
 
 @Module({
   imports: [
@@ -18,7 +21,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
         return {
-          secret: configService.get('JWT_SECRET'),
+          secret: configService.get('JWT_ACCESS_SECRET'),
           signOptions: {
             expiresIn: 3600,
           },
@@ -28,7 +31,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     TypeOrmModule.forFeature([User]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserRepository, JwtStrategy],
-  exports: [JwtStrategy, PassportModule],
+  providers: [
+    AuthService,
+    UserRepository,
+    GoogleStrategy,
+    JwtStrategy,
+    RefreshTokenStrategy,
+    TokenGeneratorService,
+  ],
+  exports: [GoogleStrategy, PassportModule, JwtStrategy, RefreshTokenStrategy],
 })
 export class AuthModule {}
