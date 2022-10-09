@@ -1,9 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { AuthCredentialDto } from './dto/auth-credential.dto';
-import { UserRepository } from './user.repository';
+import { AuthCredentialDto } from '../dto/auth-credential.dto';
+import { UserRepository } from '../domain/repository/user.repository';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from './jwt-payload-interface';
+import { JwtPayload } from '../config/jwt/jwt-payload-interface';
+import { User } from '../domain/model/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -27,5 +28,9 @@ export class AuthService {
       const accessToken: string = await this.jwsService.sign(payload);
       return { accessToken };
     } else throw new UnauthorizedException('check your credentials');
+  }
+
+  async findByUsername(username: string): Promise<User> {
+    return await this.userRepository.findOneBy({ username });
   }
 }

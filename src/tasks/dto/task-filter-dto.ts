@@ -1,4 +1,4 @@
-import { TaskStatus } from '../task-status.enuml';
+import { TaskStatus } from '../domain/task-status.enuml';
 
 export class TaskFilterDto {
   status?: TaskStatus;

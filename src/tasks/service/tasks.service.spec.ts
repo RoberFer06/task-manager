@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
-import { TaskStatus } from './task-status.enuml';
-import { TaskRepository } from './task.repository';
+import { TaskStatus } from '../domain/task-status.enuml';
+import { TaskRepository } from '../domain/repository/task.repository';
 import { TasksService } from './tasks.service';
 import { NotFoundException } from '@nestjs/common';
 

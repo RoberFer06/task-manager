@@ -4,8 +4,8 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { AuthCredentialDto } from './dto/auth-credential.dto';
-import { User } from './user.entity';
+import { AuthCredentialDto } from '../../dto/auth-credential.dto';
+import { User } from '../model/user.entity';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
